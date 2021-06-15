@@ -4,6 +4,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:notificationapp/notification_screen.dart';
 import 'package:notificationapp/second_screen.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -32,6 +34,8 @@ class ReceivedNotification {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('America/Bogota'));
 
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
@@ -44,11 +48,13 @@ void main() async {
       requestSoundPermission: false,
       onDidReceiveLocalNotification:
           (int id, String title, String body, String payload) async {
-        didReceiveLocalNotificationSubject.add(ReceivedNotification(
-            id: id, title: title, body: body, payload: payload));
+        didReceiveLocalNotificationSubject.add(
+          ReceivedNotification(
+              id: id, title: title, body: body, payload: payload),
+        );
       });
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
+  final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     if (payload != null) {
@@ -61,7 +67,6 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  static final navigatorKey = new GlobalKey<NavigatorState>();
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -107,8 +112,7 @@ class _MyAppState extends State<MyApp> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        SecondScreen(receivedNotification.payload),
+                    builder: (context) => SecondScreen(),
                   ),
                 );
               },
@@ -123,7 +127,7 @@ class _MyAppState extends State<MyApp> {
     selectNotificationSubject.stream.listen((String payload) async {
       await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => SecondScreen(payload)),
+        MaterialPageRoute(builder: (context) => SecondScreen()),
       );
     });
   }
@@ -143,7 +147,7 @@ class _MyAppState extends State<MyApp> {
         title: Text('Flutter Main Page'),
       ),
       body: Center(
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => NotificationScreen()));

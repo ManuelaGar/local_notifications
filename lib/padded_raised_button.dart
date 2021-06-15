@@ -13,7 +13,7 @@ class PaddedRaisedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-      child: RaisedButton(child: Text(buttonText), onPressed: onPressed),
+      child: ElevatedButton(child: Text(buttonText), onPressed: onPressed),
     );
   }
 }

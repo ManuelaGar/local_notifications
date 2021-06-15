@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SecondScreen extends StatefulWidget {
-  SecondScreen(this.payload);
-
-  final String payload;
-
   @override
   State<StatefulWidget> createState() => SecondScreenState();
 }
 
 class SecondScreenState extends State<SecondScreen> {
-  String _payload;
   @override
   void initState() {
     super.initState();
-    _payload = widget.payload;
   }
 
   @override
@@ -24,7 +18,7 @@ class SecondScreenState extends State<SecondScreen> {
         title: Text('Alert Page'),
       ),
       body: Center(
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: () {
             Navigator.pop(context);
           },

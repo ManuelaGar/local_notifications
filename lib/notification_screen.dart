@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import 'main.dart';
 
@@ -11,32 +12,33 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   showNotification() async {
-    var scheduledNotificationDateTime =
-        DateTime.now().add(Duration(seconds: 5));
-    var scheduledNotificationDateTime2 =
-        DateTime.now().add(Duration(seconds: 10));
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'channel_ID', 'channel name', 'channel description',
-        priority: Priority.High,
-        importance: Importance.Max,
+        priority: Priority.high,
+        importance: Importance.max,
         ticker: 'test ticker');
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.schedule(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
         'New Video is out',
         'Flutter Local Notification',
-        scheduledNotificationDateTime,
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
         platformChannelSpecifics,
-        payload: 'test payload');
-    await flutterLocalNotificationsPlugin.schedule(
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
         1,
         'Notification2',
         'Flutter Local Notification2',
-        scheduledNotificationDateTime2,
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10)),
         platformChannelSpecifics,
-        payload: 'test payload');
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   @override
@@ -46,7 +48,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         title: Text('Flutter Local Notification'),
       ),
       body: Center(
-        child: RaisedButton(
+        child: ElevatedButton(
           onPressed: showNotification,
           child: Text(
             'Demo',
